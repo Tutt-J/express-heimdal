@@ -29,7 +29,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.ENUM,
       values: ["tender", "medium-hard", "hard"],
     },
-  },, {
+  }, {
     sequelize,
     modelName: 'Wood',
   });
