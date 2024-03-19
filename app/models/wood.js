@@ -1,5 +1,7 @@
-"use strict";
-const { Model } = require("sequelize");
+'use strict';
+const {
+  Model
+} = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Wood extends Model {
     /**
@@ -11,28 +13,25 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  Wood.init(
-    {
-      name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          notNull: { msg: "Name is required" },
-        },
-      },
-      type: {
-        type: DataTypes.ENUM,
-        values: ["softwood", "exotic wood", "noble and hardwoods"],
-      },
-      hardness: {
-        type: DataTypes.ENUM,
-        values: ["tender", "medium-hard", "hard"],
+  Wood.init({
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notNull: { msg: "Name is required" },
       },
     },
-    {
-      sequelize,
-      modelName: "Wood",
-    }
-  );
+    type: {
+      type: DataTypes.ENUM,
+      values: ["softwood", "exotic wood", "noble and hardwoods"],
+    },
+    hardness: {
+      type: DataTypes.ENUM,
+      values: ["tender", "medium-hard", "hard"],
+    },
+  },, {
+    sequelize,
+    modelName: 'Wood',
+  });
   return Wood;
 };
