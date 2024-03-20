@@ -1,6 +1,14 @@
 require('dotenv').config();
+var cors = require("cors");
 
 const app = require("./app.js");
+
+var corsOptions = {
+  origin: process.env.ORIGIN,
+  optionsSuccessStatus: 200,
+};
+
+app.use(cors(corsOptions));
 
 const port = process.env.PORT
 
