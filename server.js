@@ -5,6 +5,7 @@ const app = require("./app.js");
 
 var corsOptions = {
   origin: process.env.ORIGIN,
+  // This means that if the preflight CORS request succeeds, the response status will be 200
   optionsSuccessStatus: 200,
 };
 
