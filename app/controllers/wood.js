@@ -1,5 +1,5 @@
 const { Wood } = require("../models");
-const fs = require('fs');
+const fs = require("fs");
 
 exports.readAll = async (req, res) => {
   try {
@@ -65,27 +65,34 @@ exports.update = async (req, res) => {
       ...JSON.parse(req.body.datas),
     };
 
+    //4. Si on a une nouvelle image
     if (req.file) {
+      //4A. Reconstruire le chemin de la nouvelle image
       const pathname = `${req.protocol}://${req.get("host")}/uploads/${
         req.file.filename
       }`;
 
+      //4B. Changer le chemin de l'image
       newWood = {
         ...newWood,
         image: pathname,
       };
 
+      //4C. Dans le cas où il y avait déjà une image, la supprimer
       if (wood.image) {
+        // Extraction du nom de fichier à partir du chemin de l'image
         const filename = wood.image.split("/uploads/")[1];
+        // Suppression du fichier en utilisant le module fs (File System)
         fs.unlink(`uploads/${filename}`, () => {
           console.log(`Image ${filename} deleted`);
         });
       }
     }
 
-    //4. Mettre à jour la donnée
+    //5. Mettre à jour la donnée
     await wood.update(newWood);
 
+    //6. Renvoyer le bois mis à jour
     res.status(200).json(wood);
   } catch (error) {
     res.status(500).json({
