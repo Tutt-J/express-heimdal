@@ -1,10 +1,17 @@
 const { Wood } = require("../models");
 const { remove } = require("../helpers/image.js");
+const { woodHateoas, woodCollectionHateoas } = require("../helpers/hateoas.js");
 
 exports.readAll = async (req, res) => {
   try {
-    const woods = await Wood.findAll();
-    res.status(200).json(woods);
+    let woods = await Wood.findAll();
+    woods = woods.map((wood) => {
+      return {
+        ...wood.toJSON(),
+        links: woodHateoas(wood),
+      };
+    });
+    res.status(200).json({woods, links: woodCollectionHateoas()});
   } catch (error) {
     res.status(500).json({
       message: error.message || "Some error occurred while reading woods.",
@@ -15,12 +22,20 @@ exports.readAll = async (req, res) => {
 exports.readByHardness = async (req, res) => {
   try {
     const hardness = req.params.hardness;
-    const woods = await Wood.findAll({
+    let woods = await Wood.findAll({
       where: {
         hardness: hardness,
       },
     });
-    res.status(200).json(woods);
+
+    woods = woods.map((wood) => {
+      return {
+        ...wood.toJSON(),
+        links: woodHateoas(wood),
+      };
+    });
+
+    res.status(200).json({woods, links: woodCollectionHateoas()});
   } catch (error) {
     res.status(500).json({
       message:
