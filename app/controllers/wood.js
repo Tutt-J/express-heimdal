@@ -1,5 +1,5 @@
 const { Wood } = require("../models");
-const fs = require("fs");
+const { remove } = require("../helpers/image.js");
 
 exports.readAll = async (req, res) => {
   try {
@@ -80,12 +80,7 @@ exports.update = async (req, res) => {
 
       //4C. Dans le cas où il y avait déjà une image, la supprimer
       if (wood.image) {
-        // Extraction du nom de fichier à partir du chemin de l'image
-        const filename = wood.image.split("/uploads/")[1];
-        // Suppression du fichier en utilisant le module fs (File System)
-        fs.unlink(`uploads/${filename}`, () => {
-          console.log(`Image ${filename} deleted`);
-        });
+        await remove(wood.image);
       }
     }
 
@@ -97,6 +92,35 @@ exports.update = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: error.message || "Some error occurred while updating new wood.",
+    });
+  }
+};
+
+exports.delete = async (req, res) => {
+  try {
+    // 1. Récuperer l'essence de bois
+    const wood = await Wood.findByPk(req.params.id);
+
+    // 2. Vérifier si elle existe
+    if (!wood) {
+      return res.status(404).json({
+        error: "Wood not found",
+      });
+    }
+
+    // 3. Dans le cas où on a une image, la supprimer
+    if (wood.image) {
+      await remove(wood.image);
+    }
+
+    // 4. Supprimer l'essence de bois en BDD (destroy)
+    await wood.destroy();
+
+    // 5. Renvoyer un code 204 (No content)
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json({
+      message: error.message || "Some error occurred while deleting new wood.",
     });
   }
 };
