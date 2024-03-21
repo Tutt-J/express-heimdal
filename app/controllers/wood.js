@@ -1,10 +1,17 @@
 const { Wood } = require("../models");
 const { remove } = require("../helpers/image.js");
+const { woodHateoas, woodCollectionHateoas } = require("../helpers/hateoas.js");
 
 exports.readAll = async (req, res) => {
   try {
-    const woods = await Wood.findAll();
-    res.status(200).json(woods);
+    let woods = await Wood.findAll();
+    woods = woods.map((wood) => {
+      return {
+        ...wood.toJSON(),
+        links: woodHateoas(wood),
+      };
+    });
+    res.status(200).json({ woods, links: woodCollectionHateoas() });
   } catch (error) {
     res.status(500).json({
       message: error.message || "Some error occurred while reading woods.",
@@ -15,12 +22,20 @@ exports.readAll = async (req, res) => {
 exports.readByHardness = async (req, res) => {
   try {
     const hardness = req.params.hardness;
-    const woods = await Wood.findAll({
+    let woods = await Wood.findAll({
       where: {
         hardness: hardness,
       },
     });
-    res.status(200).json(woods);
+
+    woods = woods.map((wood) => {
+      return {
+        ...wood.toJSON(),
+        links: woodHateoas(wood),
+      };
+    });
+
+    res.status(200).json({ woods, links: woodCollectionHateoas() });
   } catch (error) {
     res.status(500).json({
       message:
@@ -35,10 +50,15 @@ exports.create = async (req, res) => {
     const pathname = `${req.protocol}://${req.get("host")}/uploads/${
       req.file.filename
     }`;
-    const wood = await Wood.create({
+    let wood = await Wood.create({
       ...JSON.parse(req.body.datas),
       image: pathname,
     });
+
+    wood = {
+      ...wood.toJSON(),
+      links: woodHateoas(wood),
+    };
 
     res.status(201).json(wood);
   } catch (error) {
@@ -51,7 +71,7 @@ exports.create = async (req, res) => {
 exports.update = async (req, res) => {
   try {
     //1. Récuperer l'essence de bois
-    const wood = await Wood.findByPk(req.params.id);
+    let wood = await Wood.findByPk(req.params.id);
 
     //2. Vérifier si elle existe
     if (!wood) {
@@ -87,7 +107,13 @@ exports.update = async (req, res) => {
     //5. Mettre à jour la donnée
     await wood.update(newWood);
 
-    //6. Renvoyer le bois mis à jour
+    //6. Ajouter les hypermédias
+    wood = {
+      ...wood.toJSON(),
+      links: woodHateoas(wood),
+    };
+
+    //7. Renvoyer le bois mis à jour
     res.status(200).json(wood);
   } catch (error) {
     res.status(500).json({
