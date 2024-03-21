@@ -9,5 +9,6 @@ router.get("/", auth, woodCtrl.readAll);
 router.get("/hardness/:hardness", auth, woodCtrl.readByHardness);
 router.post("/", auth, multer, woodCtrl.create);
 router.put("/:id", auth, multer, woodCtrl.update);
+router.delete("/:id", auth, woodCtrl.delete);
 
 module.exports = router;
