@@ -129,12 +129,10 @@ paths:
             schema:
               type: object
               properties:
-
-                # Here, "param" is part/parameter name in a multipart payload.
-                # Parameter value is an object defined by the "Param" schema.
-                # Default Content-Type for objects is application/json.
-                param:
-                  $ref: "#/components/schemas/WoodsDatas"
+                datas:
+                  type: object
+                image:
+                  type: file
       responses:
         "201":
           description: Wood created
