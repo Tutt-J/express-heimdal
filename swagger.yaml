@@ -16,53 +16,15 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                firstName:
-                  type: string
-                  example: "Jane"
-                lastName:
-                  type: string
-                  example: "Doe"
-                email:
-                  type: string
-                  example: "jane@doe.com"
-                password:
-                  type: string
-                  example: "azerty"
+              $ref: "#/components/schemas/UserSignup"
       responses:
-        '201':
+        "201":
           description: Register successful
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                    example: 5
-                  email:
-                    type: string
-                    format: email
-                    example: jane@doe.com
-                  password:
-                    type: string
-                    example: "$2b$10$0W2.Zf4w6q3CVeptjetyr.BMAcUONS3cV0sc2uVG0r616fG/XZG7K"
-                  firstName:
-                    type: string
-                    example: Jane
-                  lastName:
-                    type: string
-                    example: Doe
-                  updatedAt:
-                    type: string
-                    format: date-time
-                    example: "2023-04-25T13:35:14.519Z"
-                  createdAt:
-                    type: string
-                    format: date-time
-                    example: "2023-04-25T"
-        '500':
+                $ref: "#/components/schemas/UserDatas"
+        "500":
           description: Missing some field
           content:
             application/json:
@@ -72,3 +34,280 @@ paths:
                   message:
                     type: string
                     example: "notNull Violation: firstName is required"
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Login
+      description: Login to the API
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserLogin"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNjgyNDk1NTYwLCJleHAiOjE2ODI0OTkxNjB9.Xv-OwcI6jThpBQmO5uCPIMRpQw8Xre-1ntjRerEKavQ
+                  user:
+                    $ref: "#/components/schemas/UserDatas"
+        "401":
+          description: Wrong password
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid password"
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "User not found"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Some error occurred while logging user.
+  /wood/:
+    get:
+      tags:
+        - Wood
+      summary: Read all woods
+      description: Retrieve all woods from database
+      responses:
+        "200":
+          description: Request successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  woods:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/WoodsDatas"
+                  links:
+                    type: object
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Some error occurred while reading woods.
+    post:
+      tags:
+        - Wood
+      summary: Create wood
+      description: Create a new wood
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                datas:
+                  $ref: "#/components/schemas/WoodRequest"
+                image:
+                  type: file
+      responses:
+        "201":
+          description: Wood created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WoodDatas"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Some error occurred while creating new wood.
+  /wood/:hardness:
+    get:
+      tags:
+        - Wood
+      summary: Read all woods by hardness
+      description: Retrieve all woods by hardness from database
+      parameters:
+        - name: hardness
+          in: path
+          required: true
+          schema:
+            type: string
+          description: hardness of the wood
+      responses:
+        "200":
+          description: Request successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  woods:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/WoodDatas"
+                  links:
+                    type: object
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Some error occurred while reading woods with hardness "tender"
+
+components:
+  schemas:
+    UserSignup:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          example: jane@doe.com
+        password:
+          type: string
+          example: "azerty"
+        firstName:
+          type: string
+          example: Jane
+        lastName:
+          type: string
+          example: Doe
+    UserLogin:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          example: jane@doe.com
+        password:
+          type: string
+          example: "azerty"
+    UserDatas:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 5
+        email:
+          type: string
+          format: email
+          example: jane@doe.com
+        password:
+          type: string
+          example: "$2b$10$0W2.Zf4w6q3CVeptjetyr.BMAcUONS3cV0sc2uVG0r616fG/XZG7K"
+        firstName:
+          type: string
+          example: Jane
+        lastName:
+          type: string
+          example: Doe
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2023-04-25T13:35:14.519Z"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2023-04-25T"
+    WoodRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Épicéa
+        type:
+          type: string
+          example: softwood
+        hardness:
+          type: string
+          example: tender
+    WoodDatas:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 15
+        name:
+          type: string
+          example: Épicéa
+        type:
+          type: string
+          example: softwood
+        hardness:
+          type: string
+          example: tender
+        image:
+          type: string
+          example: http://localhost:5000/uploads/Sans_titre_1711038221441.jpg
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2023-04-25T13:35:14.519Z"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2023-04-25T"
+        links:
+          type: object
+    WoodsDatas:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 15
+        name:
+          type: string
+          example: Épicéa
+        type:
+          type: string
+          example: softwood
+        hardness:
+          type: string
+          example: tender
+        image:
+          type: string
+          example: http://localhost:5000/uploads/Sans_titre_1711038221441.jpg
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2023-04-25T13:35:14.519Z"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2023-04-25T"
+        links:
+          type: object
