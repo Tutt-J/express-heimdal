@@ -130,7 +130,7 @@ paths:
               type: object
               properties:
                 datas:
-                  $ref: "#/components/schemas/WoodRequest"
+                  type: object
                 image:
                   type: file
       responses:
