@@ -1,0 +1,74 @@
+openapi: 3.1.0
+info:
+  title: Api des essences de bois
+  description: Une API pour gérer les données relatives aux essences de bois.
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000/api
+paths:
+  /auth/signup:
+    post:
+      tags:
+        - Auth
+      summary: Registration
+      description: Create an account on API
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                  example: "Jane"
+                lastName:
+                  type: string
+                  example: "Doe"
+                email:
+                  type: string
+                  example: "jane@doe.com"
+                password:
+                  type: string
+                  example: "azerty"
+      responses:
+        '201':
+          description: Register successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 5
+                  email:
+                    type: string
+                    format: email
+                    example: jane@doe.com
+                  password:
+                    type: string
+                    example: "$2b$10$0W2.Zf4w6q3CVeptjetyr.BMAcUONS3cV0sc2uVG0r616fG/XZG7K"
+                  firstName:
+                    type: string
+                    example: Jane
+                  lastName:
+                    type: string
+                    example: Doe
+                  updatedAt:
+                    type: string
+                    format: date-time
+                    example: "2023-04-25T13:35:14.519Z"
+                  createdAt:
+                    type: string
+                    format: date-time
+                    example: "2023-04-25T"
+        '500':
+          description: Missing some field
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "notNull Violation: firstName is required"
